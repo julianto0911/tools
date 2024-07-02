@@ -3,11 +3,10 @@ package lib_queue
 import (
 	"fmt"
 	"time"
-	"tools/lib_cache"
-
-	"tools/redismq"
 
 	"github.com/google/uuid"
+	"github.com/julianto0911/tools/lib_cache"
+	"github.com/julianto0911/tools/redismq"
 )
 
 type StatsQueue struct {

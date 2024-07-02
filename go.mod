@@ -1,4 +1,4 @@
-module tools
+module github.com/julianto0911/tools
 
 go 1.22.3
 

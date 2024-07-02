@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"testing"
 	"time"
-	"tools/lib_converter"
-	"tools/lib_logger"
 
+	"github.com/julianto0911/tools/lib_converter"
+	"github.com/julianto0911/tools/lib_logger"
 	"github.com/stretchr/testify/assert"
 )
 
