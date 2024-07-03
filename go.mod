@@ -1,6 +1,8 @@
-module github.com/julianto0911/tools
+module github.com/julianto0911/redismq
 
 go 1.22.3
+
+toolchain go1.22.5
 
 require (
 	github.com/alicebob/miniredis/v2 v2.33.0
@@ -9,7 +11,6 @@ require (
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
-	github.com/matttproud/gocheck v0.0.0-20130118152435-ecced547db7c
 	github.com/redis/go-redis/v9 v9.5.3
 	github.com/stretchr/testify v1.9.0
 	github.com/valyala/fasthttp v1.55.0
@@ -49,5 +50,4 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
 )
