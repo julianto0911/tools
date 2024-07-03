@@ -1,6 +1,10 @@
 package tools
 
-import "math/rand"
+import (
+	"math/rand"
+
+	"github.com/google/uuid"
+)
 
 func RandomNumber(min, max int) int {
 	if max-min == 0 {
@@ -19,4 +23,9 @@ func RandomString(n int) string {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(b)
+}
+
+func CreateUUID() string {
+	uid := uuid.New()
+	return uid.String()
 }
