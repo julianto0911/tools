@@ -1,8 +1,6 @@
-module github.com/julianto0911/redismq
+module github.com/julianto0911/tools
 
 go 1.22.3
-
-toolchain go1.22.5
 
 require (
 	github.com/alicebob/miniredis/v2 v2.33.0
@@ -10,6 +8,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0
+	github.com/julianto0911/redismq v1.0.0
 	github.com/lib/pq v1.10.9
 	github.com/redis/go-redis/v9 v9.5.3
 	github.com/stretchr/testify v1.9.0
