@@ -24,6 +24,64 @@ func validateString(rules []string, name string, v interface{}) error {
 		if err := strRange(rule, name, value); err != nil {
 			return err
 		}
+		if err := strOptMin(rule, name, value); err != nil {
+			return err
+		}
+		if err := strOptMax(rule, name, value); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func strOptMin(rule, name, value string) error {
+	if value == "" {
+		return nil
+	}
+
+	if !strings.Contains(rule, "optmin") {
+		return nil
+	}
+
+	r := strings.Split(rule, "=")
+	if len(r) < 2 {
+		return fmt.Errorf("length invalid rule definition, name : " + name)
+	}
+
+	limit, err := strconv.Atoi(strings.TrimSpace(r[1]))
+	if err != nil {
+		return fmt.Errorf("invalid rule:(%v) %w", name, err)
+	}
+
+	if len(value) < limit {
+		return fmt.Errorf("when have value, field %v must have at least %v character(s)", name, limit)
+	}
+
+	return nil
+}
+
+func strOptMax(rule, name, value string) error {
+	if value == "" {
+		return nil
+	}
+
+	if !strings.Contains(rule, "optmax") {
+		return nil
+	}
+
+	r := strings.Split(rule, "=")
+	if len(r) < 2 {
+		return fmt.Errorf("length invalid rule definition, name : " + name)
+	}
+
+	limit, err := strconv.Atoi(strings.TrimSpace(r[1]))
+	if err != nil {
+		return fmt.Errorf("invalid rule:(%v) %w", name, err)
+	}
+
+	if len(value) > limit {
+		return fmt.Errorf("total characters for field %v must be less or same than %v character(s)", name, limit)
 	}
 
 	return nil
