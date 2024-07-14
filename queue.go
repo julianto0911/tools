@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/julianto0911/redismq"
 )
 
@@ -28,8 +27,7 @@ func NewStatsQueue(rds RedisConfiguration) (*StatsQueue, error) {
 
 	//sleep 1 second to avoid test fail
 	time.Sleep(time.Second)
-	id := uuid.New()
-	name := "_bet_reader_" + id.String()
+	name := "_bet_reader_" + ShortUUID()
 
 	obj.BetConsumer, err = obj.BetQueue.AddConsumer(rds.Prefix + name)
 	if err != nil {
@@ -44,8 +42,7 @@ func NewStatsQueue(rds RedisConfiguration) (*StatsQueue, error) {
 
 	//sleep 1 second to avoid test fail
 	time.Sleep(time.Second)
-	id = uuid.New()
-	name = "_data_reader_" + id.String()
+	name = "_data_reader_" + ShortUUID()
 
 	obj.DataConsumer, err = obj.DataQueue.AddConsumer(rds.Prefix + name)
 	if err != nil {
