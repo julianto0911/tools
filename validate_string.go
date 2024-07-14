@@ -6,6 +6,16 @@ import (
 	"strings"
 )
 
+/*
+validate string rules
+required ("validate:required") , must have value
+min ("validate:min=[length]") , value typed length must be at least of value
+max ("validate:max=[length]") , value typed length must same or less length than value
+length ("validate:length=[length]") , value typed length must be in exact length value
+range ("validate:range[val1,val2]"), value typed must be in range of value declared
+optx ("validate:optx=[length]") , if have value, length must be at least of value
+opty ("validate:opty=[length]") , if have value, length must be same or less than value
+*/
 func validateString(rules []string, name string, v interface{}) error {
 	value := v.(string)
 	for _, rule := range rules {
@@ -24,10 +34,10 @@ func validateString(rules []string, name string, v interface{}) error {
 		if err := strRange(rule, name, value); err != nil {
 			return err
 		}
-		if err := strOptMin(rule, name, value); err != nil {
+		if err := strOptX(rule, name, value); err != nil {
 			return err
 		}
-		if err := strOptMax(rule, name, value); err != nil {
+		if err := strOptY(rule, name, value); err != nil {
 			return err
 		}
 	}
@@ -35,12 +45,12 @@ func validateString(rules []string, name string, v interface{}) error {
 	return nil
 }
 
-func strOptMin(rule, name, value string) error {
+func strOptX(rule, name, value string) error {
 	if value == "" {
 		return nil
 	}
 
-	if !strings.Contains(rule, "optmin") {
+	if !strings.Contains(rule, "optx") {
 		return nil
 	}
 
@@ -61,12 +71,12 @@ func strOptMin(rule, name, value string) error {
 	return nil
 }
 
-func strOptMax(rule, name, value string) error {
+func strOptY(rule, name, value string) error {
 	if value == "" {
 		return nil
 	}
 
-	if !strings.Contains(rule, "optmax") {
+	if !strings.Contains(rule, "opty") {
 		return nil
 	}
 
@@ -81,7 +91,7 @@ func strOptMax(rule, name, value string) error {
 	}
 
 	if len(value) > limit {
-		return fmt.Errorf("total characters for field %v must be less or same than %v character(s)", name, limit)
+		return fmt.Errorf("when have value, total characters for field %v must be less or same than %v character(s)", name, limit)
 	}
 
 	return nil
