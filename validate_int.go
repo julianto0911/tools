@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -21,6 +22,64 @@ func validateInt(rules []string, name string, v interface{}) error {
 		if err := intRequired(rule, name, value); err != nil {
 			return err
 		}
+		if err := intOptX(rule, name, value); err != nil {
+			return err
+		}
+		if err := intOptY(rule, name, value); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func intOptX(rule, name string, value int) error {
+	if value == 0 {
+		return nil
+	}
+
+	if !strings.Contains(rule, "optx") {
+		return nil
+	}
+
+	r := strings.Split(rule, "=")
+	if len(r) < 2 {
+		return fmt.Errorf("length invalid rule definition, name : " + name)
+	}
+
+	limit := StringToInt(strings.TrimSpace(r[1]))
+	if limit == 0 {
+		return fmt.Errorf("invalid rule:(%v) %w", name, errors.New("cannot define zero in rule"))
+	}
+
+	if value < limit {
+		return fmt.Errorf("when have value, field %v must have at least %v character(s)", name, limit)
+	}
+
+	return nil
+}
+
+func intOptY(rule, name string, value int) error {
+	if value == 0 {
+		return nil
+	}
+
+	if !strings.Contains(rule, "opty") {
+		return nil
+	}
+
+	r := strings.Split(rule, "=")
+	if len(r) < 2 {
+		return fmt.Errorf("length invalid rule definition, name : " + name)
+	}
+
+	limit := StringToInt(strings.TrimSpace(r[1]))
+	if limit == 0 {
+		return fmt.Errorf("invalid rule:(%v) %w", name, errors.New("cannot define zero in rule"))
+	}
+
+	if value > limit {
+		return fmt.Errorf("when have value, total characters for field %v must be less or same than %v character(s)", name, limit)
 	}
 
 	return nil
