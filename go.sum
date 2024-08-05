@@ -40,8 +40,8 @@ github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD
 github.com/jinzhu/inflection v1.0.0/go.mod h1:h+uFLlag+Qp1Va5pdKtLDYj+kHp5pxUVkryuEj+Srlc=
 github.com/jinzhu/now v1.1.5 h1:/o9tlHleP7gOFmsnYNz3RGnqzefHA47wQpKrrdTIwXQ=
 github.com/jinzhu/now v1.1.5/go.mod h1:d3SSVoowX0Lcu0IBviAWJpolVfI5UJVZZ7cO71lE/z8=
-github.com/julianto0911/redismq v1.0.0 h1:d/MN6DSsk1ikTNuO090XJq/Gj9GcpwsvHOaDMFcT0YQ=
-github.com/julianto0911/redismq v1.0.0/go.mod h1:eiKI1SetSx8YevFMj+6h5rTpzgr/8Ib/C8bErnH3niY=
+github.com/julianto0911/redismq v0.0.1 h1:VRq38OfcRtaxYge9gMwyOMNra29BLPaKGB0HXJy7sPA=
+github.com/julianto0911/redismq v0.0.1/go.mod h1:eiKI1SetSx8YevFMj+6h5rTpzgr/8Ib/C8bErnH3niY=
 github.com/klauspost/compress v1.17.9 h1:6KIumPrER1LHsvBVuDa0r5xaG0Es51mhhB9BQB2qeMA=
 github.com/klauspost/compress v1.17.9/go.mod h1:Di0epgTjJY877eYKx5yC51cX2A2Vl2ibi7bDH9ttBbw=
 github.com/kr/pretty v0.3.0 h1:WgNl7dwNpEZ6jJ9k1snq4pZsg7DOEN8hP9Xw0Tsjwk0=
