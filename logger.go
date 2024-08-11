@@ -23,7 +23,8 @@ func NewLogger(path string, debug bool) (*zap.Logger, error) {
 	}
 
 	fileEncoder := zapcore.NewJSONEncoder(pe)
-	pe.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339) //zapcore.ISO8601TimeEncoder
+	pe.TimeKey = "timestamp"
+	pe.EncodeTime = zapcore.ISO8601TimeEncoder
 
 	consoleEncoder := zapcore.NewConsoleEncoder(pe)
 
