@@ -10,12 +10,13 @@ import (
 
 func TestNewLogger(t *testing.T) {
 	//set logger with debug false
-	l, err := NewLogger("C:/work/logs/", false)
+	l, err := NewLogger("/tmp/", false)
 	assert.Nil(t, err, "error should be nil")
 	assert.NotNil(t, l, "object should be initiated")
+	l.Info("test")
 
 	//set logger with debug true
-	l, err = NewLogger("C:/work/logs/", true)
+	l, err = NewLogger("/tmp/", true)
 	assert.Nil(t, err, "error should be nil")
 	assert.NotNil(t, l, "object should be initiated")
 }
