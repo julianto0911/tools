@@ -62,6 +62,16 @@ func (gs *GinSession) GetFloat64(c *gin.Context, key string) (float64, error) {
 	return value.(float64), nil
 }
 
+func (gs *GinSession) GetBool(c *gin.Context, key string) (bool, error) {
+	session := sessions.Default(c)
+	value := session.Get(key)
+	if value == nil {
+		return false, errors.New("value not found")
+	}
+
+	return value.(bool), nil
+}
+
 func (gs *GinSession) SetString(c *gin.Context, key string, value string) error {
 	session := sessions.Default(c)
 	session.Set(key, value)
@@ -81,6 +91,12 @@ func (gs *GinSession) SetInt64(c *gin.Context, key string, value int64) error {
 }
 
 func (gs *GinSession) SetFloat64(c *gin.Context, key string, value float64) error {
+	session := sessions.Default(c)
+	session.Set(key, value)
+	return session.Save()
+}
+
+func (gs *GinSession) SetBool(c *gin.Context, key string, value bool) error {
 	session := sessions.Default(c)
 	session.Set(key, value)
 	return session.Save()
