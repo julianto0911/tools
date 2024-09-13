@@ -101,3 +101,8 @@ func (gs *GinSession) SetBool(c *gin.Context, key string, value bool) error {
 	session.Set(key, value)
 	return session.Save()
 }
+
+func (gs *GinSession) Save(c *gin.Context) error {
+	session := sessions.Default(c)
+	return session.Save()
+}
