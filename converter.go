@@ -49,6 +49,11 @@ func StringToInt64(val string) int64 {
 	return t
 }
 
+func StringToInt8(val string) int8 {
+	t, _ := strconv.ParseInt(val, 10, 64)
+	return int8(t)
+}
+
 func StringToInt(val string) int {
 	t, _ := strconv.Atoi(val)
 	return t
