@@ -50,8 +50,18 @@ func StringToInt64(val string) int64 {
 }
 
 func StringToInt8(val string) int8 {
-	t, _ := strconv.ParseInt(val, 10, 64)
+	t, _ := strconv.ParseInt(val, 10, 8)
 	return int8(t)
+}
+
+func StringToInt16(val string) int16 {
+	t, _ := strconv.ParseInt(val, 10, 16)
+	return int16(t)
+}
+
+func StringToInt32(val string) int32 {
+	t, _ := strconv.ParseInt(val, 10, 32)
+	return int32(t)
 }
 
 func StringToInt(val string) int {
