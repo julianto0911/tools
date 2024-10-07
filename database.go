@@ -90,7 +90,7 @@ func CreateLogger(debug bool) logger.Interface {
 	)
 }
 
-func NewGormDB(dbtype string, conn *sql.DB, log logger.Interface) (*gorm.DB, error) {
+func NewGormDB(dbtype string, conn *sql.DB, log logger.Interface, preparedStatement bool) (*gorm.DB, error) {
 	if dbtype == Mysql {
 		return gorm.Open(mysql.New(mysql.Config{
 			Conn:                      conn,
@@ -104,5 +104,5 @@ func NewGormDB(dbtype string, conn *sql.DB, log logger.Interface) (*gorm.DB, err
 
 	return gorm.Open(postgres.New(
 		postgres.Config{Conn: conn}),
-		&gorm.Config{Logger: log})
+		&gorm.Config{Logger: log, PrepareStmt: preparedStatement})
 }

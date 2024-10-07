@@ -33,7 +33,7 @@ func TestMysqlDatabase(t *testing.T) {
 	assert.NotNil(t, logger, "object should initiated")
 
 	//setup gorm db
-	gormDB, err := NewGormDB(Mysql, conn, logger)
+	gormDB, err := NewGormDB(Mysql, conn, logger, true)
 	assert.Nil(t, err, "error should nil on gorm db creation")
 
 	assert.NotNil(t, gormDB, "gorm database should initiated")
@@ -68,7 +68,7 @@ func TestPostgreDatabase(t *testing.T) {
 	assert.NotNil(t, logger, "object should initiated")
 
 	//setup gorm db
-	gormDB, err := NewGormDB(Postgresql, conn, logger)
+	gormDB, err := NewGormDB(Postgresql, conn, logger, true)
 	assert.Nil(t, err, "error should nil on gorm db creation")
 
 	assert.NotNil(t, gormDB, "gorm database should initiated")
