@@ -106,3 +106,7 @@ func (c *Cacher) release() {
 
 	c.registers = []string{}
 }
+
+func (c *Cacher) GetKeysWithParam(name string) ([]string, error) {
+	return c.rdb.Keys(ctxB, c.prefix+"_"+name).Result()
+}
