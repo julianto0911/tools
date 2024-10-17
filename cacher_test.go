@@ -35,6 +35,10 @@ func TestCacher(t *testing.T) {
 	assert.Nil(t, err, "should nil")
 	assert.Equal(t, val, "test", "should have value")
 
+	keys, err := r.GetKeysWithParam("test")
+	assert.Nil(t, err, "should nil")
+	assert.Equal(t, keys, []string{"_test"}, "should have value")
+
 	err = r.Delete("test")
 	assert.Nil(t, err, "should nil")
 
