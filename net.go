@@ -48,7 +48,7 @@ func makeHeader(data map[string]string) http.Header {
 	return h
 }
 
-func (n *RequestAdaptor) RequestWithJSON(reqType string, address string, data interface{}, header map[string]string) ([]byte, error) {
+func (n RequestAdaptor) RequestWithJSON(reqType string, address string, data interface{}, header map[string]string) ([]byte, error) {
 	errHandle := func(err error) ([]byte, error) {
 		n.log.Error("request with json",
 			zap.String("address", address),
@@ -103,7 +103,7 @@ func (n *RequestAdaptor) RequestWithJSON(reqType string, address string, data in
 	return body, nil
 }
 
-func (n *RequestAdaptor) RequestWithQuery(reqType string, address string, data, header map[string]string) ([]byte, error) {
+func (n RequestAdaptor) RequestWithQuery(reqType string, address string, data, header map[string]string) ([]byte, error) {
 	errHandle := func(err error) ([]byte, error) {
 		n.log.Error("request with query",
 			zap.String("address", address),
