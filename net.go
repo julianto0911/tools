@@ -17,6 +17,11 @@ const (
 	TYPE_JSON  = 2
 )
 
+type RequestAdaptorInterface interface {
+	RequestWithJSON(reqType string, address string, data interface{}, header map[string]string) ([]byte, error)
+	RequestWithQuery(reqType string, address string, data, header map[string]string) ([]byte, error)
+}
+
 type RequestAdaptor struct {
 	debug  bool
 	log    *zap.Logger
