@@ -25,6 +25,8 @@ func Validate(item interface{}) error {
 			err = validateString(rules, name, value)
 		case reflect.Int:
 			err = validateInt(rules, name, value)
+		case reflect.Int32:
+			err = validateInt32(rules, name, value)
 		case reflect.Int64:
 			err = validateInt64(rules, name, value)
 		case reflect.Float64:

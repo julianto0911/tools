@@ -98,7 +98,7 @@ func NewGormDB(dbtype string, conn *sql.DB, log logger.Interface, preparedStatem
 		}), &gorm.Config{
 			SkipDefaultTransaction: true,
 			Logger:                 log,
-			PrepareStmt:            true,
+			PrepareStmt:            preparedStatement,
 		})
 	}
 
