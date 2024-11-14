@@ -26,11 +26,20 @@ func NewRedisClient(url, port, password string, dbIndex int) *redis.Client {
 	})
 }
 
+// this is useful for testing, to predefined behavior of the response
+type cacherResponse struct {
+	Key   string
+	Type  string
+	Value string
+	Error error
+}
+
 type Cacher struct {
 	rdb       *redis.Client
 	expiracy  time.Duration
 	prefix    string
 	registers []string
+	responses map[string]cacherResponse
 }
 
 func NewCacher(rdc *redis.Client, prefix string, expiracy int) Cacher {
@@ -38,6 +47,15 @@ func NewCacher(rdc *redis.Client, prefix string, expiracy int) Cacher {
 		rdb:      rdc,
 		expiracy: time.Duration(expiracy) * time.Second,
 		prefix:   prefix,
+	}
+}
+
+func (c *Cacher) SetResponse(key, tipe, value string, err error) {
+	c.responses[key+"_"+tipe] = cacherResponse{
+		Key:   key,
+		Value: value,
+		Error: err,
+		Type:  tipe,
 	}
 }
 
@@ -62,21 +80,45 @@ func (c *Cacher) PrintKeys() {
 }
 
 func (c *Cacher) SetWithDuration(name string, value string, d time.Duration) error {
+	if v, exist := c.responses[name+"_set"]; exist {
+		//remove registered response
+		delete(c.responses, name+"_set")
+		return v.Error
+	}
+
 	c.addRegister(name)
 	return c.rdb.Set(ctxB, c.prefix+"_"+name, value, d).Err()
 }
 
 func (c *Cacher) Set(name string, value string) error {
+	if v, exist := c.responses[name+"_set"]; exist {
+		//remove registered response
+		delete(c.responses, name+"_set")
+		return v.Error
+	}
+
 	c.addRegister(name)
 	return c.rdb.Set(ctxB, c.prefix+"_"+name, value, c.expiracy).Err()
 }
 
 func (c *Cacher) Get(name string) (string, error) {
+	if v, exist := c.responses[name+"_get"]; exist {
+		//remove registered response
+		delete(c.responses, name+"_get")
+		return v.Value, v.Error
+	}
+
 	c.addRegister(name)
 	return c.rdb.Get(ctxB, c.prefix+"_"+name).Result()
 }
 
 func (c *Cacher) Delete(name string) error {
+	if v, exist := c.responses[name+"_delete"]; exist {
+		//remove registered response
+		delete(c.responses, name+"_delete")
+		return v.Error
+	}
+
 	c.release()
 	return c.rdb.Del(ctxB, c.prefix+"_"+name).Err()
 }
@@ -108,5 +150,12 @@ func (c *Cacher) release() {
 }
 
 func (c *Cacher) GetKeysWithParam(name string) ([]string, error) {
+	if v, exist := c.responses[name]; exist {
+		//remove registered response
+		delete(c.responses, name)
+		return []string{v.Value}, v.Error
+	}
+
+	c.addRegister(name)
 	return c.rdb.Keys(ctxB, c.prefix+"_"+name).Result()
 }
