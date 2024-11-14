@@ -46,9 +46,10 @@ type Cacher struct {
 
 func NewCacher(rdc *redis.Client, prefix string, expiracy int) Cacher {
 	return Cacher{
-		rdb:      rdc,
-		expiracy: time.Duration(expiracy) * time.Second,
-		prefix:   prefix,
+		rdb:       rdc,
+		expiracy:  time.Duration(expiracy) * time.Second,
+		prefix:    prefix,
+		responses: make(map[string]cacherResponse),
 	}
 }
 
