@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -40,6 +41,7 @@ type Cacher struct {
 	prefix    string
 	registers []string
 	responses map[string]cacherResponse
+	forced    bool //force to send error for any kind of request
 }
 
 func NewCacher(rdc *redis.Client, prefix string, expiracy int) Cacher {
@@ -50,13 +52,14 @@ func NewCacher(rdc *redis.Client, prefix string, expiracy int) Cacher {
 	}
 }
 
-func (c *Cacher) SetResponse(key, tipe, value string, err error) {
+func (c *Cacher) SetResponse(key, tipe, value string, forced bool, err error) {
 	c.responses[key+"_"+tipe] = cacherResponse{
 		Key:   key,
 		Value: value,
 		Error: err,
 		Type:  tipe,
 	}
+	c.forced = forced
 }
 
 func (c *Cacher) PrintKeys() {
@@ -80,6 +83,11 @@ func (c *Cacher) PrintKeys() {
 }
 
 func (c *Cacher) SetWithDuration(name string, value string, d time.Duration) error {
+	if c.forced {
+		c.forced = false
+		return errors.New("forced")
+	}
+
 	if v, exist := c.responses[name+"_set"]; exist {
 		//remove registered response
 		delete(c.responses, name+"_set")
@@ -91,6 +99,11 @@ func (c *Cacher) SetWithDuration(name string, value string, d time.Duration) err
 }
 
 func (c *Cacher) Set(name string, value string) error {
+	if c.forced {
+		c.forced = false
+		return errors.New("forced")
+	}
+
 	if v, exist := c.responses[name+"_set"]; exist {
 		//remove registered response
 		delete(c.responses, name+"_set")
@@ -102,6 +115,11 @@ func (c *Cacher) Set(name string, value string) error {
 }
 
 func (c *Cacher) Get(name string) (string, error) {
+	if c.forced {
+		c.forced = false
+		return "", errors.New("forced")
+	}
+
 	if v, exist := c.responses[name+"_get"]; exist {
 		//remove registered response
 		delete(c.responses, name+"_get")
@@ -113,6 +131,11 @@ func (c *Cacher) Get(name string) (string, error) {
 }
 
 func (c *Cacher) Delete(name string) error {
+	if c.forced {
+		c.forced = false
+		return errors.New("forced")
+	}
+
 	if v, exist := c.responses[name+"_delete"]; exist {
 		//remove registered response
 		delete(c.responses, name+"_delete")
