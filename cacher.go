@@ -2,7 +2,6 @@ package tools
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -41,7 +40,8 @@ type Cacher struct {
 	prefix    string
 	registers []string
 	responses map[string]cacherResponse
-	forced    bool //force to send error for any kind of request
+	forced    bool  //force to send error for any kind of request
+	err       error //error info when forced is true
 }
 
 func NewCacher(rdc *redis.Client, prefix string, expiracy int) Cacher {
@@ -52,14 +52,18 @@ func NewCacher(rdc *redis.Client, prefix string, expiracy int) Cacher {
 	}
 }
 
-func (c *Cacher) SetResponse(key, tipe, value string, forced bool, err error) {
+func (c *Cacher) SetForcedError(err error) {
+	c.forced = true
+	c.err = err
+}
+
+func (c *Cacher) SetResponse(key, tipe, value string, err error) {
 	c.responses[key+"_"+tipe] = cacherResponse{
 		Key:   key,
 		Value: value,
 		Error: err,
 		Type:  tipe,
 	}
-	c.forced = forced
 }
 
 func (c *Cacher) PrintKeys() {
@@ -85,7 +89,9 @@ func (c *Cacher) PrintKeys() {
 func (c *Cacher) SetWithDuration(name string, value string, d time.Duration) error {
 	if c.forced {
 		c.forced = false
-		return errors.New("forced")
+		err := c.err
+		c.err = nil
+		return err
 	}
 
 	if v, exist := c.responses[name+"_set"]; exist {
@@ -101,7 +107,9 @@ func (c *Cacher) SetWithDuration(name string, value string, d time.Duration) err
 func (c *Cacher) Set(name string, value string) error {
 	if c.forced {
 		c.forced = false
-		return errors.New("forced")
+		err := c.err
+		c.err = nil
+		return err
 	}
 
 	if v, exist := c.responses[name+"_set"]; exist {
@@ -117,7 +125,9 @@ func (c *Cacher) Set(name string, value string) error {
 func (c *Cacher) Get(name string) (string, error) {
 	if c.forced {
 		c.forced = false
-		return "", errors.New("forced")
+		err := c.err
+		c.err = nil
+		return "", err
 	}
 
 	if v, exist := c.responses[name+"_get"]; exist {
@@ -133,7 +143,9 @@ func (c *Cacher) Get(name string) (string, error) {
 func (c *Cacher) Delete(name string) error {
 	if c.forced {
 		c.forced = false
-		return errors.New("forced")
+		err := c.err
+		c.err = nil
+		return err
 	}
 
 	if v, exist := c.responses[name+"_delete"]; exist {
@@ -151,6 +163,12 @@ func (c *Cacher) Release() {
 }
 
 func (c *Cacher) Ping() error {
+	if c.forced {
+		c.forced = false
+		err := c.err
+		c.err = nil
+		return err
+	}
 	ctx := context.Background()
 	return c.rdb.Ping(ctx).Err()
 }
@@ -173,6 +191,12 @@ func (c *Cacher) release() {
 }
 
 func (c *Cacher) GetKeysWithParam(name string) ([]string, error) {
+	if c.forced {
+		c.forced = false
+		err := c.err
+		c.err = nil
+		return nil, err
+	}
 	if v, exist := c.responses[name]; exist {
 		//remove registered response
 		delete(c.responses, name)
