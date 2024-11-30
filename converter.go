@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/google/go-querystring/query"
-	"github.com/jinzhu/copier"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -108,24 +108,19 @@ func DayOfWeek(v time.Time) int {
 	return int(v.Weekday())
 }
 
-// Generic converter
-func ToDTO[E any, D any](entity E) (*D, error) {
-	var dto D
-	if err := copier.Copy(&dto, &entity); err != nil {
-		return nil, err
-	}
-	return &dto, nil
-}
+func CopyMatchingFields(dst, src interface{}) {
+	dstVal := reflect.ValueOf(dst).Elem()
+	srcVal := reflect.ValueOf(src).Elem()
 
-// Generic slice converter
-func ToDTOs[E any, D any](entities []E) ([]D, error) {
-	dtos := make([]D, len(entities))
-	for i, entity := range entities {
-		dto, err := ToDTO[E, D](entity)
-		if err != nil {
-			return nil, err
+	for i := 0; i < dstVal.NumField(); i++ {
+		dstField := dstVal.Field(i)
+		dstType := dstVal.Type().Field(i)
+
+		// Try to find matching field in source
+		if srcField := srcVal.FieldByName(dstType.Name); srcField.IsValid() {
+			if dstField.Type() == srcField.Type() {
+				dstField.Set(srcField)
+			}
 		}
-		dtos[i] = *dto
 	}
-	return dtos, nil
 }
