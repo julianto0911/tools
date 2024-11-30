@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/go-querystring/query"
+	"github.com/jinzhu/copier"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -105,4 +106,26 @@ func Int64ToString(v int64) string {
 
 func DayOfWeek(v time.Time) int {
 	return int(v.Weekday())
+}
+
+// Generic converter
+func ToDTO[E any, D any](entity E) (*D, error) {
+	var dto D
+	if err := copier.Copy(&dto, &entity); err != nil {
+		return nil, err
+	}
+	return &dto, nil
+}
+
+// Generic slice converter
+func ToDTOs[E any, D any](entities []E) ([]D, error) {
+	dtos := make([]D, len(entities))
+	for i, entity := range entities {
+		dto, err := ToDTO[E, D](entity)
+		if err != nil {
+			return nil, err
+		}
+		dtos[i] = *dto
+	}
+	return dtos, nil
 }
