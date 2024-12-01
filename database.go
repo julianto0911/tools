@@ -42,6 +42,7 @@ type DBConfiguration struct {
 	MaxOpenConn    int
 	MaxIdleConn    int
 	Migrate        bool
+	PreparedStmt   bool
 }
 
 const (
