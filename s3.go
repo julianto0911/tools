@@ -11,30 +11,21 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-type S3 struct {
-	AccessKeyID     string
-	SecretAccessKey string
-	Token           string
-	Region          string
-	Endpoint        string
-	Bucket          string
-	S3TenantID      string
-	Path            string
-}
-
 func NewS3(cfg S3Config) S3 {
-	resp := S3{}
-	resp.AccessKeyID = cfg.AccessKeyID
-	resp.SecretAccessKey = cfg.SecretAccessKey
-	resp.Token = cfg.Token
-	resp.Region = cfg.Region
-	resp.Endpoint = cfg.Endpoint
-	resp.Bucket = cfg.Bucket
-	resp.S3TenantID = cfg.S3TenantID
-	resp.Path = cfg.Path
+	s3 := cloudStorage{}
+	s3.AccessKeyID = cfg.AccessKeyID
+	s3.SecretAccessKey = cfg.SecretAccessKey
+	s3.Token = cfg.Token
+	s3.Region = cfg.Region
+	s3.Endpoint = cfg.Endpoint
+	s3.Bucket = cfg.Bucket
+	s3.S3TenantID = cfg.S3TenantID
+	s3.Path = cfg.Path
 
-	return resp
+	return s3
 }
+
+type S3 interface{}
 
 type S3Config struct {
 	AccessKeyID     string
@@ -48,7 +39,18 @@ type S3Config struct {
 	Path            string
 }
 
-func (c *S3) getSVC() (*s3.S3, error) {
+type cloudStorage struct {
+	AccessKeyID     string
+	SecretAccessKey string
+	Token           string
+	Region          string
+	Endpoint        string
+	Bucket          string
+	S3TenantID      string
+	Path            string
+}
+
+func (c *cloudStorage) getSVC() (*s3.S3, error) {
 	creds := credentials.NewStaticCredentials(c.AccessKeyID, c.SecretAccessKey, c.Token)
 	_, err := creds.Get()
 	if err != nil {
@@ -60,15 +62,15 @@ func (c *S3) getSVC() (*s3.S3, error) {
 	return s3.New(mySession, cfg), nil
 }
 
-// func (c *S3) objPath(obj string) string {
+// func (c *cloudStorage) objPath(obj string) string {
 // 	return c.Endpoint + "/" + c.S3TenantID + ":" + c.Bucket + obj
 // }
 
-func (c *S3) InitUploader() (*s3manager.Uploader, error) {
+func (c *cloudStorage) InitUploader() (*s3manager.Uploader, error) {
 	return c.initUploader()
 }
 
-func (c *S3) initDownloader() (*s3manager.Downloader, error) {
+func (c *cloudStorage) initDownloader() (*s3manager.Downloader, error) {
 	//get credentials
 	creds := credentials.NewStaticCredentials(c.AccessKeyID, c.SecretAccessKey, c.Token)
 	_, err := creds.Get()
@@ -88,7 +90,7 @@ func (c *S3) initDownloader() (*s3manager.Downloader, error) {
 	return downloader, nil
 }
 
-func (c *S3) initUploader() (*s3manager.Uploader, error) {
+func (c *cloudStorage) initUploader() (*s3manager.Uploader, error) {
 	//get credentials
 	creds := credentials.NewStaticCredentials(c.AccessKeyID, c.SecretAccessKey, c.Token)
 	_, err := creds.Get()
@@ -109,7 +111,7 @@ func (c *S3) initUploader() (*s3manager.Uploader, error) {
 	return uploader, nil
 }
 
-func (c *S3) CreateFolder(path string) (*s3.PutObjectOutput, error) {
+func (c *cloudStorage) CreateFolder(path string) (*s3.PutObjectOutput, error) {
 	svc, err := c.getSVC()
 	if err != nil {
 		return nil, err
@@ -124,7 +126,7 @@ func (c *S3) CreateFolder(path string) (*s3.PutObjectOutput, error) {
 	return resp, err
 }
 
-func (c *S3) DeleteImage(path string) (*s3.DeleteObjectOutput, error) {
+func (c *cloudStorage) DeleteImage(path string) (*s3.DeleteObjectOutput, error) {
 	svc, err := c.getSVC()
 	if err != nil {
 		return nil, err
@@ -140,7 +142,7 @@ func (c *S3) DeleteImage(path string) (*s3.DeleteObjectOutput, error) {
 	return resp, err
 }
 
-func (c *S3) GetFileList(ctx context.Context, path string) ([]string, error) {
+func (c *cloudStorage) GetFileList(ctx context.Context, path string) ([]string, error) {
 	//get credentials
 	creds := credentials.NewStaticCredentials(c.AccessKeyID, c.SecretAccessKey, c.Token)
 	_, err := creds.Get()
@@ -174,7 +176,7 @@ func (c *S3) GetFileList(ctx context.Context, path string) ([]string, error) {
 	return s3Keys, nil
 }
 
-func (c *S3) DownloadFile(file *os.File, path string) (int64, error) {
+func (c *cloudStorage) DownloadFile(file *os.File, path string) (int64, error) {
 	downloader, err := c.initDownloader()
 	if err != nil {
 		return 0, err
