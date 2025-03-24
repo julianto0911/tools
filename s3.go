@@ -31,6 +31,7 @@ type S3 interface {
 	DeleteImage(path string) (*s3.DeleteObjectOutput, error)
 	GetFileList(ctx context.Context, path string) ([]string, error)
 	DownloadFile(file *os.File, path string) (int64, error)
+	BucketName() string
 }
 
 type S3Config struct {
@@ -68,9 +69,9 @@ func (c *cloudStorage) getSVC() (*s3.S3, error) {
 	return s3.New(mySession, cfg), nil
 }
 
-// func (c *cloudStorage) objPath(obj string) string {
-// 	return c.Endpoint + "/" + c.S3TenantID + ":" + c.Bucket + obj
-// }
+func (c *cloudStorage) BucketName() string {
+	return c.Bucket
+}
 
 func (c *cloudStorage) initDownloader() (*s3manager.Downloader, error) {
 	//get credentials
