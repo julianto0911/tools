@@ -48,7 +48,7 @@ type S3Config struct {
 	Path            string
 }
 
-func (c *S3) getSVC() (*s3.S3, error) {
+func (c *S3) GetSVC() (*s3.S3, error) {
 	creds := credentials.NewStaticCredentials(c.AccessKeyID, c.SecretAccessKey, c.Token)
 	_, err := creds.Get()
 	if err != nil {
@@ -110,7 +110,7 @@ func (c *S3) initUploader() (*s3manager.Uploader, error) {
 }
 
 func (c *S3) CreateFolder(path string) (*s3.PutObjectOutput, error) {
-	svc, err := c.getSVC()
+	svc, err := c.GetSVC()
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func (c *S3) CreateFolder(path string) (*s3.PutObjectOutput, error) {
 }
 
 func (c *S3) DeleteImage(path string) (*s3.DeleteObjectOutput, error) {
-	svc, err := c.getSVC()
+	svc, err := c.GetSVC()
 	if err != nil {
 		return nil, err
 	}
