@@ -22,10 +22,16 @@ func NewS3(cfg S3Config) S3 {
 	s3.S3TenantID = cfg.S3TenantID
 	s3.Path = cfg.Path
 
-	return s3
+	return &s3
 }
 
-type S3 interface{}
+type S3 interface {
+	InitUploader() (*s3manager.Uploader, error)
+	CreateFolder(path string) (*s3.PutObjectOutput, error)
+	DeleteImage(path string) (*s3.DeleteObjectOutput, error)
+	GetFileList(ctx context.Context, path string) ([]string, error)
+	DownloadFile(file *os.File, path string) (int64, error)
+}
 
 type S3Config struct {
 	AccessKeyID     string
@@ -66,10 +72,6 @@ func (c *cloudStorage) getSVC() (*s3.S3, error) {
 // 	return c.Endpoint + "/" + c.S3TenantID + ":" + c.Bucket + obj
 // }
 
-func (c *cloudStorage) InitUploader() (*s3manager.Uploader, error) {
-	return c.initUploader()
-}
-
 func (c *cloudStorage) initDownloader() (*s3manager.Downloader, error) {
 	//get credentials
 	creds := credentials.NewStaticCredentials(c.AccessKeyID, c.SecretAccessKey, c.Token)
@@ -90,7 +92,7 @@ func (c *cloudStorage) initDownloader() (*s3manager.Downloader, error) {
 	return downloader, nil
 }
 
-func (c *cloudStorage) initUploader() (*s3manager.Uploader, error) {
+func (c *cloudStorage) InitUploader() (*s3manager.Uploader, error) {
 	//get credentials
 	creds := credentials.NewStaticCredentials(c.AccessKeyID, c.SecretAccessKey, c.Token)
 	_, err := creds.Get()
