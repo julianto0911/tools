@@ -40,6 +40,7 @@ type S3 interface {
 	EndpointValue() string
 	S3TenantIDValue() string
 	PathValue() string
+	AclValue() string
 }
 
 type S3Config struct {
@@ -65,6 +66,10 @@ type cloudStorage struct {
 	S3TenantID      string
 	Path            string
 	Acl             string
+}
+
+func (c *cloudStorage) AclValue() string {
+	return c.Acl
 }
 
 func (c *cloudStorage) RegionValue() string {
