@@ -32,6 +32,13 @@ type S3 interface {
 	GetFileList(ctx context.Context, path string) ([]string, error)
 	DownloadFile(file *os.File, path string) (int64, error)
 	BucketName() string
+	RegionValue() string
+	AccessKeyIDValue() string
+	SecretAccessKeyValue() string
+	TokenValue() string
+	EndpointValue() string
+	S3TenantIDValue() string
+	PathValue() string
 }
 
 type S3Config struct {
@@ -55,6 +62,38 @@ type cloudStorage struct {
 	Bucket          string
 	S3TenantID      string
 	Path            string
+}
+
+func (c *cloudStorage) RegionValue() string {
+	return c.Region
+}
+
+func (c *cloudStorage) AccessKeyIDValue() string {
+	return c.AccessKeyID
+}
+
+func (c *cloudStorage) SecretAccessKeyValue() string {
+	return c.SecretAccessKey
+}
+
+func (c *cloudStorage) TokenValue() string {
+	return c.Token
+}
+
+func (c *cloudStorage) EndpointValue() string {
+	return c.Endpoint
+}
+
+func (c *cloudStorage) BucketValue() string {
+	return c.Bucket
+}
+
+func (c *cloudStorage) S3TenantIDValue() string {
+	return c.S3TenantID
+}
+
+func (c *cloudStorage) PathValue() string {
+	return c.Path
 }
 
 func (c *cloudStorage) getSVC() (*s3.S3, error) {
