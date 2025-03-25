@@ -32,7 +32,6 @@ type S3 interface {
 	GetFileList(ctx context.Context, path string) ([]string, error)
 	DownloadFile(file *os.File, path string) (int64, error)
 	BucketName() string
-	ObjPath(obj string) string
 }
 
 type S3Config struct {
@@ -68,10 +67,6 @@ func (c *cloudStorage) getSVC() (*s3.S3, error) {
 	cfg := aws.NewConfig().WithRegion(c.Region).WithCredentials(creds).WithEndpoint(c.Endpoint).WithS3ForcePathStyle(true)
 	mySession := session.Must(session.NewSession())
 	return s3.New(mySession, cfg), nil
-}
-
-func (c *cloudStorage) ObjPath(obj string) string {
-	return c.Endpoint + "/" + c.S3TenantID + ":" + c.Bucket + obj
 }
 
 func (c *cloudStorage) BucketName() string {
