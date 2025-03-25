@@ -21,6 +21,7 @@ func NewS3(cfg S3Config) S3 {
 	s3.Bucket = cfg.Bucket
 	s3.S3TenantID = cfg.S3TenantID
 	s3.Path = cfg.Path
+	s3.Acl = cfg.Acl
 
 	return &s3
 }
@@ -51,6 +52,7 @@ type S3Config struct {
 	S3TenantID      string
 	DoStream        bool
 	Path            string
+	Acl             string
 }
 
 type cloudStorage struct {
@@ -62,6 +64,7 @@ type cloudStorage struct {
 	Bucket          string
 	S3TenantID      string
 	Path            string
+	Acl             string
 }
 
 func (c *cloudStorage) RegionValue() string {
@@ -162,6 +165,7 @@ func (c *cloudStorage) CreateFolder(path string) (*s3.PutObjectOutput, error) {
 	params := &s3.PutObjectInput{
 		Bucket: aws.String(c.Bucket),
 		Key:    aws.String(path),
+		ACL:    &c.Acl,
 	}
 
 	resp, err := svc.PutObject(params)
