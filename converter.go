@@ -124,3 +124,7 @@ func CopyMatchingFields(dst, src interface{}) {
 		}
 	}
 }
+
+func TimeParse(v string, format string) (time.Time, error) {
+	return time.Parse(format, v)
+}

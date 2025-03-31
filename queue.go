@@ -8,8 +8,8 @@ import (
 )
 
 type StatsQueue struct {
-	BetQueue     *redismq.Queue
-	BetConsumer  *redismq.Consumer
+	BQueue       *redismq.Queue
+	BConsumer    *redismq.Consumer
 	DataQueue    *redismq.Queue
 	DataConsumer *redismq.Consumer
 }
@@ -20,18 +20,18 @@ func NewStatsQueue(rds RedisConfiguration) (*StatsQueue, error) {
 	var err error
 
 	//add first statistics queue components
-	obj.BetQueue, err = redismq.SelectQueue(rds.Host, rds.Port, rds.Password, 9, rds.Prefix+"_bet_queue")
+	obj.BQueue, err = redismq.SelectQueue(rds.Host, rds.Port, rds.Password, 9, rds.Prefix+"_b_queue")
 	if err != nil {
-		obj.BetQueue = redismq.CreateQueue(rds.Host, rds.Port, rds.Password, 9, rds.Prefix+"_bet_queue")
+		obj.BQueue = redismq.CreateQueue(rds.Host, rds.Port, rds.Password, 9, rds.Prefix+"_b_queue")
 	}
 
 	//sleep 1 second to avoid test fail
 	time.Sleep(time.Second)
-	name := "_bet_reader_" + ShortUUID()
+	name := "_b_reader_" + ShortUUID()
 
-	obj.BetConsumer, err = obj.BetQueue.AddConsumer(rds.Prefix + name)
+	obj.BConsumer, err = obj.BQueue.AddConsumer(rds.Prefix + name)
 	if err != nil {
-		return nil, fmt.Errorf("fail add consumer for bet queue : %w", err)
+		return nil, fmt.Errorf("fail add consumer for b queue : %w", err)
 	}
 
 	//add second statistics queue components
@@ -52,6 +52,6 @@ func NewStatsQueue(rds RedisConfiguration) (*StatsQueue, error) {
 	return &obj, nil
 }
 func (s *StatsQueue) Close() {
-	defer s.BetConsumer.Quit()
+	defer s.BConsumer.Quit()
 	defer s.DataConsumer.Quit()
 }
