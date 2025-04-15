@@ -13,37 +13,26 @@ type MailerConfig struct {
 	AuthPassword string
 }
 
-func NewMailer(sender string, to []string, cc []mailCC, subject string, attachments []string, config mailConfig) Mailer {
+func NewMailer(config mailConfig) Mailer {
 	return &mailer{
-		Sender:      sender,
-		To:          to,
-		CC:          cc,
-		Subject:     subject,
-		Attachments: attachments,
-		Config:      config,
+		Config: config,
 	}
 }
 
 type Mailer interface {
-	SendMail(doLog bool) error
+	SendMail(c MailContent) error
 }
 
 type mailer struct {
-	Sender      string
-	To          []string
-	CC          []mailCC
-	Subject     string
-	Attachments []string
-	Config      mailConfig
-	Body        mailBody
+	Config mailConfig
 }
 
-type mailCC struct {
+type MailCC struct {
 	Email string
 	Name  string
 }
 
-type mailBody struct {
+type MailBody struct {
 	Content     string
 	ContentType string
 }
@@ -55,42 +44,56 @@ type mailConfig struct {
 	AUTH_PASSWORD string
 }
 
-func (m *mailer) doMailLog(doLog bool, err error) {
-	if !doLog {
+func (m *mailer) doMailLog(c MailContent, err error) {
+	if !c.Log {
 		return
 	}
 
 	if err != nil {
 		log.Println("====Email Error====")
+	} else {
+		log.Println("====Email Sent====")
 	}
 
-	log.Println("From :", m.Sender)
-	log.Println("To :", m.To)
-	log.Println("CC :", m.CC)
-	log.Println("Subject :", m.Subject)
-	log.Println("Attachment :", m.Attachments)
+	log.Println("From :", c.Sender)
+	log.Println("To :", c.Recipient)
+	log.Println("CC :", c.CC)
+	log.Println("Subject :", c.Subject)
+	log.Println("Type :", c.Body.ContentType)
+	log.Println("Body :", c.Body.Content)
+	log.Println("Attachment :", c.Attachments)
 
 	if err != nil {
 		log.Println("Error :", err)
 	}
 }
 
-func (m *mailer) SendMail(doLog bool) error {
-	mailer := gomail.NewMessage()
-	mailer.SetHeader("From", m.Sender)
+type MailContent struct {
+	Sender      string
+	Recipient   []string
+	CC          []MailCC
+	Subject     string
+	Attachments []string
+	Body        MailBody
+	Log         bool
+}
 
-	for _, to := range m.To {
-		mailer.SetHeader("To", to)
+func (m *mailer) SendMail(c MailContent) error {
+	mailer := gomail.NewMessage()
+	mailer.SetHeader("From", c.Sender)
+
+	for _, recipient := range c.Recipient {
+		mailer.SetHeader("To", recipient)
 	}
 
-	for _, cc := range m.CC {
+	for _, cc := range c.CC {
 		mailer.SetAddressHeader("Cc", cc.Email, cc.Name)
 	}
 
-	mailer.SetHeader("Subject", m.Subject)
-	mailer.SetBody(m.Body.ContentType, m.Body.Content)
+	mailer.SetHeader("Subject", c.Subject)
+	mailer.SetBody(c.Body.ContentType, c.Body.Content)
 
-	for _, attachment := range m.Attachments {
+	for _, attachment := range c.Attachments {
 		mailer.Attach(attachment)
 	}
 
@@ -103,10 +106,10 @@ func (m *mailer) SendMail(doLog bool) error {
 
 	err := dialer.DialAndSend(mailer)
 	if err != nil {
-		m.doMailLog(doLog, err)
+		m.doMailLog(c, err)
 		return err
 	}
 
-	m.doMailLog(doLog, nil)
+	m.doMailLog(c, nil)
 	return nil
 }
