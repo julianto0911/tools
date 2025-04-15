@@ -48,7 +48,7 @@ func (m *mailer) doMailLog(c MailContent, err error) {
 		log.Println("====Email Sent====")
 	}
 
-	log.Println("From :", c.Sender)
+	log.Println("From :", m.Config.AuthEmail)
 	log.Println("To :", c.Recipient)
 	log.Println("CC :", c.CC)
 	log.Println("Subject :", c.Subject)
@@ -62,7 +62,6 @@ func (m *mailer) doMailLog(c MailContent, err error) {
 }
 
 type MailContent struct {
-	Sender      string
 	Recipient   []string
 	CC          []MailCC
 	Subject     string
@@ -73,7 +72,7 @@ type MailContent struct {
 
 func (m *mailer) SendMail(c MailContent) error {
 	mailer := gomail.NewMessage()
-	mailer.SetHeader("From", c.Sender)
+	mailer.SetHeader("From", m.Config.AuthEmail)
 
 	for _, recipient := range c.Recipient {
 		mailer.SetHeader("To", recipient)
