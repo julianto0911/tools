@@ -6,6 +6,13 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
+type MailerConfig struct {
+	Host         string
+	Port         int
+	AuthEmail    string
+	AuthPassword string
+}
+
 func NewMailer(sender string, to []string, cc []mailCC, subject string, attachments []string, config mailConfig) Mailer {
 	return &mailer{
 		Sender:      sender,
