@@ -13,7 +13,7 @@ type MailerConfig struct {
 	AuthPassword string
 }
 
-func NewMailer(config mailConfig) Mailer {
+func NewMailer(config MailerConfig) Mailer {
 	return &mailer{
 		Config: config,
 	}
@@ -24,7 +24,7 @@ type Mailer interface {
 }
 
 type mailer struct {
-	Config mailConfig
+	Config MailerConfig
 }
 
 type MailCC struct {
@@ -35,13 +35,6 @@ type MailCC struct {
 type MailBody struct {
 	Content     string
 	ContentType string
-}
-
-type mailConfig struct {
-	HOST          string
-	PORT          int
-	AUTH_EMAIL    string
-	AUTH_PASSWORD string
 }
 
 func (m *mailer) doMailLog(c MailContent, err error) {
@@ -98,10 +91,10 @@ func (m *mailer) SendMail(c MailContent) error {
 	}
 
 	dialer := gomail.NewDialer(
-		m.Config.HOST,
-		m.Config.PORT,
-		m.Config.AUTH_EMAIL,
-		m.Config.AUTH_PASSWORD,
+		m.Config.Host,
+		m.Config.Port,
+		m.Config.AuthEmail,
+		m.Config.AuthPassword,
 	)
 
 	err := dialer.DialAndSend(mailer)
