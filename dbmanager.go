@@ -30,10 +30,14 @@ ctx.WithValue("dbname", "db1")
 ctx.WithValue("dbuser", "user1")
 */
 func (m *DBManager) GetConnection(ctx context.Context) (*gorm.DB, error) {
-	dbName := ctx.Value("dbname").(string)
-	dbUser := ctx.Value("dbuser").(string)
+	dbName := fmt.Sprintf("%s", ctx.Value("dbname"))
+	dbUser := fmt.Sprintf("%s", ctx.Value("dbuser"))
 	if dbName == "" {
-		return nil, fmt.Errorf("dbName is required")
+		return nil, fmt.Errorf("database name is required")
+	}
+
+	if dbUser == "" {
+		return nil, fmt.Errorf("database username is required")
 	}
 
 	m.mu.RLock()
