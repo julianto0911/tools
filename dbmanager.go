@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
@@ -14,6 +15,7 @@ type DBManager struct {
 	config      DBConfiguration
 }
 
+// Multi database connection manager
 func NewDBManager(defaultConfig DBConfiguration) *DBManager {
 	return &DBManager{
 		connections: make(map[string]*gorm.DB),
@@ -21,19 +23,31 @@ func NewDBManager(defaultConfig DBConfiguration) *DBManager {
 	}
 }
 
-func (m *DBManager) GetConnection(dbname string) (*gorm.DB, error) {
+/*
+Use context to pass value of database and db username
+example :
+ctx.WithValue("dbname", "db1")
+ctx.WithValue("dbuser", "user1")
+*/
+func (m *DBManager) GetConnection(ctx context.Context) (*gorm.DB, error) {
+	dbName := ctx.Value("dbname").(string)
+	dbUser := ctx.Value("dbuser").(string)
+	if dbName == "" {
+		return nil, fmt.Errorf("dbName is required")
+	}
+
 	m.mu.RLock()
-	db, exists := m.connections[dbname]
+	db, exists := m.connections[dbName]
 	m.mu.RUnlock()
 
 	if exists {
 		return db, nil
 	}
 
-	return m.createConnection(dbname)
+	return m.createConnection(dbName, dbUser)
 }
 
-func (m *DBManager) createConnection(dbname string) (*gorm.DB, error) {
+func (m *DBManager) createConnection(dbname, dbuser string) (*gorm.DB, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -43,11 +57,12 @@ func (m *DBManager) createConnection(dbname string) (*gorm.DB, error) {
 	}
 
 	// Clone base config and modify for tenant
-	tenantConfig := m.config
-	tenantConfig.DBName = fmt.Sprintf("%s_%s", m.config.DBName, dbname)
+	dbConfig := m.config
+	dbConfig.DBName = dbname
+	dbConfig.Username = dbuser
 
 	// Create new connection
-	sqlConn, err := ConnectDB(tenantConfig)
+	sqlConn, err := ConnectDB(dbConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to tenant database: %w", err)
 	}
@@ -64,6 +79,7 @@ func (m *DBManager) createConnection(dbname string) (*gorm.DB, error) {
 	return db, nil
 }
 
+// Close all connections before exit application
 func (m *DBManager) CloseConnections() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
