@@ -9,6 +9,13 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+type RabbitMQConfig struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+}
+
 type MockRabbitMQ struct {
 	mock.Mock
 }
