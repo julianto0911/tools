@@ -27,7 +27,12 @@ func (m *MockRabbitMQ) Close() {
 	m.Called()
 }
 
-func NewRabbitMQ(uri string) (RabbitMQ, error) {
+func rabbitMQString(user, password, host, port string) string {
+	return fmt.Sprintf("amqp://%s:%s@%s:%s", user, password, host, port)
+}
+
+func NewRabbitMQ(user, password, host, port string) (RabbitMQ, error) {
+	uri := rabbitMQString(user, password, host, port)
 	conn, err := amqp.Dial(uri)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %w", err)
