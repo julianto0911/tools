@@ -155,7 +155,6 @@ func (c *Cacher) Delete(name string) error {
 		return v.Error
 	}
 
-	c.release()
 	return c.rdb.Del(ctxB, c.prefix+"_"+name).Err()
 }
 
